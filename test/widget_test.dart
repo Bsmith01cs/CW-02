@@ -11,20 +11,33 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:movie_watchlist_app/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
+  testWidgets('shows the movie catalog', (tester) async {
     await tester.pumpWidget(const MyApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    expect(find.text('Movie Watchlist'), findsOneWidget);
+    expect(find.text('Nerve'), findsOneWidget);
+    expect(find.text('Lucy'), findsOneWidget);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    await tester.scrollUntilVisible(
+      find.text('Belly'),
+      250,
+      scrollable: find.byType(Scrollable),
+    );
+    expect(find.text('Belly'), findsOneWidget);
+  });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  testWidgets('opens the selected movie and returns home', (tester) async {
+    await tester.pumpWidget(const MyApp());
+
+    await tester.tap(find.text('Nerve'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Cast'), findsOneWidget);
+    expect(find.textContaining('Emma Roberts'), findsOneWidget);
+    expect(find.textContaining('A high school senior'), findsOneWidget);
+
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    expect(find.text('Movie Watchlist'), findsOneWidget);
   });
 }
